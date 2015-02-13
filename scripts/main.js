@@ -1,16 +1,29 @@
-require(['data/schools', 'domready'], function(schools, domReady) {
+require([
+    'data/schools',
+    'data/competencies',
+    'data/objectives',
+    'domready'
+], function(schools, competencies, objectives, domReady) {
     var draw = function(){
         var format = d3.format();
         var width = 240;
         var height = 90;
         var data = [];
-        for(var id in schools){
-            var school = schools[id];
-            data.push({
-                x: school.title,
-                y: school.competencies.length
+        var school = schools[3];
+        school.competencies.forEach(function(competencyId){
+            var competency = competencies[competencyId];
+            var programYearCount = 0;
+            competency.objectives.forEach(function(objectiveId){
+                programYearCount += objectives[objectiveId].programYears.length;
             });
-        }
+            if(programYearCount){
+                data.push({
+                    x: competency.title,
+                    y: programYearCount
+                });
+            }
+
+        });
         var svg = d3.select('#target');
         var x = d3.scale.ordinal().rangeRoundBands([0, width], 0.1);
         var y = d3.scale.linear().range([height, 0]);
